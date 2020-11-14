@@ -11,21 +11,27 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.inject.Inject;
+
 
 @Path("/builds")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BuildResource {
 
+    @Inject
+    BuildService service;
+
     private Set<Build> builds = Collections.newSetFromMap(Collections.synchronizedMap(new LinkedHashMap<>()));
 
     public BuildResource() {
-        builds.add(new Build("RHEL8.2-build-01", "Red Hat Enterprise Linux 8.2 Build-01"));
-        builds.add(new Build("OCP4.5.1-build-01", "OpenShift Container Platform 4.5.1 Build-01"));
     }
 
     @GET
     public Set<Build> list() {
+        if (builds.size() == 0){
+            builds = service.list();
+        }
         return builds;
     }
 
